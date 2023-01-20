@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Feather } from '@expo/vector-icons';
+import { Alert } from 'react-native';
 import colors from 'tailwindcss/colors';
 import {
   View,
@@ -11,6 +12,7 @@ import {
 
 import { BackButton } from '../components/BackButton';
 import { Checkbox } from '../components/Checkbox';
+import { api } from '../lib/axios';
 
 const availableWeekDays = [
   'Domingo',
@@ -24,6 +26,7 @@ const availableWeekDays = [
 
 export function New() {
   const [weekDays, setWeeekDays] = useState<number[]>([]);
+  const [title, setTitle] = useState<string>('');
 
   function handleToggleWeekDay(weekDayIndex: number) {
     if (weekDays.includes(weekDayIndex)) {
@@ -33,11 +36,26 @@ export function New() {
     }
   }
 
+  async function handleCreateNewHabit() {
+    try {
+      if (!title.trim() || weekDays.length === 0) return Alert.alert('Novo hábito', 'Informe os dados do novo hábito')
+      await api.post('/habits', { title, weekDays })
+
+      setTitle('')
+      setWeeekDays([]);
+
+      Alert.alert('YAY!', "Hábito criado com sucesso!")
+    } catch(err) {
+      console.error(err);
+      Alert.alert('Ooops!', 'Não foi possível criar o hábito 😭')
+    }
+  }
+
   return (
     <View className="flex-1 bg-background px-8 pt-16">
       <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{paddingBottom:100}}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         <BackButton />
 
@@ -50,9 +68,12 @@ export function New() {
         </Text>
 
         <TextInput
-        placeholder='ex.: Exercícios, dormir bem, etc...'
-        placeholderTextColor={colors.zinc[500]}
-        className="h-12 pl-4 rounded-lg mt-3 bg-zinc-800 text-white focus:border-2 focus:border-violet-500"
+          autoFocus
+          value={title}
+          onChangeText={text => setTitle(text)}
+          placeholder="ex.: Exercícios, dormir bem, etc..."
+          placeholderTextColor={colors.zinc[500]}
+          className="h-12 pl-4 rounded-lg mt-3 bg-zinc-800 text-white focus:border-2 focus:border-violet-500"
         />
 
         <Text className="font-semibold mt-4 mb-3 text-white text-base">
@@ -69,6 +90,7 @@ export function New() {
         ))}
 
         <TouchableOpacity
+          onPress={handleCreateNewHabit}
           className="w-full h-14 flex-row justify-center items-center bg-green-500 rounded-md mt-6"
           activeOpacity={0.7}
         >

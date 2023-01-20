@@ -8,4 +8,4 @@ const app = Fastify({
 app.register(FastifyCors);
 app.register(appRoutes);
 
-app.listen({ port: 3333 }).then(() => console.log('HTTP server running!'));
+app.listen({ port: 3333, host: '192.168.0.17' }).then(() => console.log('HTTP server running!'));
