@@ -26,6 +26,8 @@ export function SummaryTable() {
     })
   }, []);
 
+  if (summary.length == 0) return <h1>Loading...</h1>
+
   return (
     <div className="w-full flex">
       <div className="grid grid-rows-7 grid-flow-row gap-3">
@@ -48,7 +50,7 @@ export function SummaryTable() {
           })
           return <HabitDay
           amount={dayInSummary?.amount}
-          completed={dayInSummary?.completed}
+          defaultCompleted={dayInSummary?.completed}
           date={date}
           key={date.toString()} />;
         })}
